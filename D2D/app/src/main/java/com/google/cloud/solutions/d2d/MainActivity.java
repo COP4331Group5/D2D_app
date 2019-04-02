@@ -94,12 +94,11 @@ public class MainActivity extends AppCompatActivity {
                 userBdayField.setText(text);
             }
         });
-
+ 
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Integer plan = dataSnapshot.getValue(Integer.class);
-                plan.toString();
+                String plan = dataSnapshot.getValue(Integer.class).toString();
                 userPlanField.setText(plan);
             }
 
