@@ -22,30 +22,34 @@ public class MainActivity extends AppCompatActivity {
     EditText userBdayField;
     EditText userPlanField;
 
-    public static class User {
-        public String name;
-        // Age usually won't be above 127 so byte type can help save some space
-        public byte age;
-        public float bmi;
-        // Java has a Date class that can be used to create date variables but I don't know how it
-        // would play with Firebase date types so I'm leaving it as a string for now and we can
-        // parse through it to convert it to a Java date type
-        public String bday;
-        public String height;
-        public String login;
-        public String password;
-        public int userID;
-        public int weight;
-        public int nutPlan;
-    }
-
-
-
-
+    // Database instances used to get to specific fields of the database
     private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference userRef = rootRef.child("Users").child("Adam").child("Name");
     private DatabaseReference bdayRef = rootRef.child("Users").child("Adam").child("Birthday");
     private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
+
+    public static class User {
+        public String Name;
+        // Age usually won't be above 127 so byte type can help save some space
+        public int Age;
+        public String Birthday;
+
+        public User() {
+
+        }
+
+        public User(String name, int age, String bday) {
+            this.Name = name;
+            this.Age = age;
+            this.Birthday = bday;
+        }
+    }
+
+    private void writeNewUser(String userID, String name, int age, String bday) {
+        User user = new User(name, age, bday);
+
+        rootRef.child("Users").child(userID).setValue(user);
+    }
 
 
     @Override
@@ -56,15 +60,17 @@ public class MainActivity extends AppCompatActivity {
         // UI elements
         getButton = (Button)findViewById(R.id.getButton);
         sendButton= (Button)findViewById(R.id.sendButton);
-        userNameField = (EditText) findViewById(R.id.userNameField);
-        userBdayField = (EditText) findViewById(R.id.userBdayField);
-        userPlanField = (EditText) findViewById(R.id.userPlanField);
+        userNameField = (EditText)findViewById(R.id.userNameField);
+        userBdayField = (EditText)findViewById(R.id.userBdayField);
+        userPlanField = (EditText)findViewById(R.id.userPlanField);
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        writeNewUser("0192", "Test Boi", 69, "03/05/1999");
 
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -94,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 userBdayField.setText(text);
             }
         });
- 
+
         planRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
