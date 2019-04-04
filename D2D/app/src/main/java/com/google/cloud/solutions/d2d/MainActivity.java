@@ -1,52 +1,124 @@
 package com.google.cloud.solutions.d2d;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Button;
+
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
+
+    Button getButton;
+    Button sendButton;
+    EditText userNameField;
+    EditText userBdayField;
+    EditText userAgeField;
+
+    // Database instances used to get to specific fields of the database
+    private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference userRef = rootRef.child("Users").child("Adam").child("Name");
+    private DatabaseReference bdayRef = rootRef.child("Users").child("Adam").child("Birthday");
+//    private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
+
+    private void writeNewUser(String userID, String name, int age, String bday) {
+        User user = new User(name, age, bday);
+
+        rootRef.child("Users").child(userID).setValue(user);
+    }
+
+    public void submitNewUser(View view) {
+        String userName = userNameField.getText().toString();
+        int age = Integer.parseInt(userAgeField.getText().toString());
+        String bday = userBdayField.getText().toString();
+
+        writeNewUser("888", userName, age, bday);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        // UI elements
+        getButton = (Button)findViewById(R.id.getButton);
+        sendButton= (Button)findViewById(R.id.sendButton);
+        userNameField = (EditText)findViewById(R.id.enterNameEdit);
+        userAgeField = (EditText)findViewById(R.id.enterAgeEdit);
+        userBdayField = (EditText)findViewById(R.id.enterBdayEdit);
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String text = dataSnapshot.getValue(String.class);
+                userNameField.setText(text);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                String text = "Lol reading from the database didn't work";
+                userNameField.setText(text);
             }
         });
+
+        bdayRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String text = dataSnapshot.getValue(String.class);
+                userBdayField.setText(text);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                String text = "Lol reading from the database didn't work";
+                userBdayField.setText(text);
+            }
+        });
+
+//        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                String plan = dataSnapshot.getValue(Integer.class).toString();
+//                userPlanField.setText(plan);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                String text = "Lol reading from the database did not work";
+//                userPlanField.setText(text);
+//            }
+//        });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    public static class User {
+        public String Name;
+        public int Age;
+        public String Birthday;
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        public User() {
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
         }
 
-        return super.onOptionsItemSelected(item);
+
+        public User(String name, int age, String bday) {
+            this.Name = name;
+            this.Age = age;
+            this.Birthday = bday;
+        }
     }
 }
