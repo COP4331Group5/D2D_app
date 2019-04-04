@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
 
@@ -20,35 +21,26 @@ public class MainActivity extends AppCompatActivity {
     Button sendButton;
     EditText userNameField;
     EditText userBdayField;
-    EditText userPlanField;
+    EditText userAgeField;
 
     // Database instances used to get to specific fields of the database
     private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference userRef = rootRef.child("Users").child("Adam").child("Name");
     private DatabaseReference bdayRef = rootRef.child("Users").child("Adam").child("Birthday");
-    private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
-
-    public static class User {
-        public String Name;
-        // Age usually won't be above 127 so byte type can help save some space
-        public int Age;
-        public String Birthday;
-
-        public User() {
-
-        }
-
-        public User(String name, int age, String bday) {
-            this.Name = name;
-            this.Age = age;
-            this.Birthday = bday;
-        }
-    }
+//    private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
 
     private void writeNewUser(String userID, String name, int age, String bday) {
         User user = new User(name, age, bday);
 
         rootRef.child("Users").child(userID).setValue(user);
+    }
+
+    public void submitNewUser(View view) {
+        String userName = userNameField.getText().toString();
+        int age = Integer.parseInt(userAgeField.getText().toString());
+        String bday = userBdayField.getText().toString();
+
+        writeNewUser("888", userName, age, bday);
     }
 
 
@@ -60,18 +52,15 @@ public class MainActivity extends AppCompatActivity {
         // UI elements
         getButton = (Button)findViewById(R.id.getButton);
         sendButton= (Button)findViewById(R.id.sendButton);
-        userNameField = (EditText)findViewById(R.id.userNameField);
-        userBdayField = (EditText)findViewById(R.id.userBdayField);
-        userPlanField = (EditText)findViewById(R.id.userPlanField);
+        userNameField = (EditText)findViewById(R.id.enterNameEdit);
+        userAgeField = (EditText)findViewById(R.id.enterAgeEdit);
+        userBdayField = (EditText)findViewById(R.id.enterBdayEdit);
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        writeNewUser("0192", "Test Boi", 69, "03/05/1999");
-
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -101,18 +90,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String plan = dataSnapshot.getValue(Integer.class).toString();
-                userPlanField.setText(plan);
-            }
+//        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                String plan = dataSnapshot.getValue(Integer.class).toString();
+//                userPlanField.setText(plan);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                String text = "Lol reading from the database did not work";
+//                userPlanField.setText(text);
+//            }
+//        });
+    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                String text = "Lol reading from the database did not work";
-                userPlanField.setText(text);
-            }
-        });
+    public static class User {
+        public String Name;
+        public int Age;
+        public String Birthday;
+
+        public User() {
+
+        }
+
+
+        public User(String name, int age, String bday) {
+            this.Name = name;
+            this.Age = age;
+            this.Birthday = bday;
+        }
     }
 }
