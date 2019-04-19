@@ -34,18 +34,46 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference bdayRef = rootRef.child("Users").child("Adam").child("Birthday");
 //    private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
 
-    private void writeNewUser(String userID, String name, int age, String bday) {
-        //String key = rootRef.child("Users").getKey();
-        // Toast hh = new Toast("hh");
-        User user = new User(name, age, bday);
-        Map<String, Object> userValues = user.toMap();
+    User user;
+    private void createUser(String name, int age, String bday) {
+        user = new User(name, age, bday);
+    }
 
-        Map<String, Object> userUpdates = new HashMap<>();
-        userUpdates.put("/Users/" + userID + "/age/", userValues);
 
-        rootRef.updateChildren(userUpdates);
+    private void writeNewUser(User user, String userID/*String userID, String name, int age, String bday*/) {
+        //User user = new User(name, age, bday);
+       // Map<String, Object> userValues = user.toMap();
 
-        //rootRef.child("Users").child(userID).setValue(user);
+       // Map<String, Object> userUpdates = new HashMap<>();
+       // userUpdates.put("/Users/" + userID + "/age/", userValues);
+
+       // rootRef.updateChildren(userUpdates);
+
+        rootRef.child("Users").child(userID).setValue(user);
+    }
+
+    public void updateUserAge(String userID) {
+        int newAge = Integer.parseInt(userAgeField.getText().toString());
+
+        // Check for age validity
+        Map<String,Object> farts = user.updateAge(newAge);
+
+        Map<String, Object> fart = new HashMap<>();
+        fart.put("/Users/" + userID + "/age", farts);
+
+        rootRef.updateChildren(fart);
+    }
+
+    public void press(View view) {
+        //int age = Integer.parseInt(userAgeField.getText().toString());
+        //updateUserAge("4cXSk9TdjYMFCZXAvliMKnNHNry1");
+
+//        String refTemp = firebase.database().ref("Users/" + "4cXSk9TdjYMFCZXAvliMKnNHNry1" + "/Age");
+//
+//        int NEWAGE = 10;
+//        refTemp.update ({"Age": NEWAGE });
+
+        rootRef.child("Users").child("4cXSk9TdjYMFCZXAvliMKnNHNry1").child("Dates").child("blah").setValue(69);
     }
 
     public void submitNewUser(View view) {
@@ -53,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         int age = Integer.parseInt(userAgeField.getText().toString());
         String bday = userBdayField.getText().toString();
 
-        writeNewUser("4cXSk9TdjYMFCZXAvliMKnNHNry1", userName, age, bday);
+        writeNewUser(user,"4cXSk9TdjYMFCZXAvliMKnNHNry1");
     }
 
 
@@ -142,6 +170,15 @@ public class MainActivity extends AppCompatActivity {
             result.put("birthday", Birthday);
 
             return result;
+        }
+
+        @Exclude
+        public Map<String, Object> updateAge(int age) {
+            HashMap<String, Object> result = new HashMap<>();
+            result.put("age", age);
+
+            return result;
+
         }
     }
 }
