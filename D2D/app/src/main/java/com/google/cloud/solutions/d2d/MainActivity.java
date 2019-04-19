@@ -7,13 +7,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,9 +35,17 @@ public class MainActivity extends AppCompatActivity {
 //    private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
 
     private void writeNewUser(String userID, String name, int age, String bday) {
+        //String key = rootRef.child("Users").getKey();
+        // Toast hh = new Toast("hh");
         User user = new User(name, age, bday);
+        Map<String, Object> userValues = user.toMap();
 
-        rootRef.child("Users").child(userID).setValue(user);
+        Map<String, Object> userUpdates = new HashMap<>();
+        userUpdates.put("/Users/" + userID + "/age/", userValues);
+
+        rootRef.updateChildren(userUpdates);
+
+        //rootRef.child("Users").child(userID).setValue(user);
     }
 
     public void submitNewUser(View view) {
@@ -40,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         int age = Integer.parseInt(userAgeField.getText().toString());
         String bday = userBdayField.getText().toString();
 
-        writeNewUser("888", userName, age, bday);
+        writeNewUser("4cXSk9TdjYMFCZXAvliMKnNHNry1", userName, age, bday);
     }
 
 
@@ -111,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         public String Birthday;
 
         public User() {
-
+            // Default constructor for calls to DataSnapshot
         }
 
 
@@ -119,6 +132,16 @@ public class MainActivity extends AppCompatActivity {
             this.Name = name;
             this.Age = age;
             this.Birthday = bday;
+        }
+
+        @Exclude
+        public Map<String, Object> toMap() {
+            HashMap<String, Object> result = new HashMap<>();
+            result.put("name", Name);
+            result.put("age", Age);
+            result.put("birthday", Birthday);
+
+            return result;
         }
     }
 }
