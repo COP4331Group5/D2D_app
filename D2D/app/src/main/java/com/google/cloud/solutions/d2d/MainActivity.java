@@ -1,22 +1,22 @@
 package com.google.cloud.solutions.d2d;
 
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
+import android.view.MenuItem;
+import android.widget.TextView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
 
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
+    private TextView mTextMessage;
     Button getButton;
     Button sendButton;
     EditText userNameField;
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 //    private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
 
     private void writeNewUser(String userID, String name, int age, String bday) {
-        User user = new User(name, age, bday);
+        MainActivity.User user = new MainActivity.User(name, age, bday);
 
         rootRef.child("Users").child(userID).setValue(user);
     }
@@ -43,66 +43,49 @@ public class MainActivity extends AppCompatActivity {
         writeNewUser("888", userName, age, bday);
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // UI elements
-        getButton = (Button)findViewById(R.id.getButton);
-        sendButton= (Button)findViewById(R.id.sendButton);
-        userNameField = (EditText)findViewById(R.id.enterNameEdit);
-        userAgeField = (EditText)findViewById(R.id.enterAgeEdit);
-        userBdayField = (EditText)findViewById(R.id.enterBdayEdit);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(this);
+
+        loadFragment(new HomeFragment());
     }
 
+    private boolean loadFragment(Fragment fragment)
+    {
+        if(fragment != null)
+        {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+            return true;
+        }
+        return false;
+    }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String text = dataSnapshot.getValue(String.class);
-                userNameField.setText(text);
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
+    {
+        Fragment fragment = null;
 
-            }
+        switch (menuItem.getItemId())
+        {
+            case R.id.navigation_home:
+                fragment = new HomeFragment();
+                break;
+            case R.id.navigation_exercise:
+                fragment = new ExerciseFragment();
+                break;
+            case R.id.navigation_nutrition:
+                fragment = new NutritionFragment();
+                break;
+            case R.id.navigation_settings:
+                fragment = new SettingsFragment();
+                break;
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                String text = "Lol reading from the database didn't work";
-                userNameField.setText(text);
-            }
-        });
-
-        bdayRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String text = dataSnapshot.getValue(String.class);
-                userBdayField.setText(text);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                String text = "Lol reading from the database didn't work";
-                userBdayField.setText(text);
-            }
-        });
-
-//        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                String plan = dataSnapshot.getValue(Integer.class).toString();
-//                userPlanField.setText(plan);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                String text = "Lol reading from the database did not work";
-//                userPlanField.setText(text);
-//            }
-//        });
+        return loadFragment(fragment);
     }
 
     public static class User {
@@ -110,10 +93,10 @@ public class MainActivity extends AppCompatActivity {
         public int Age;
         public String Birthday;
 
-        public User() {
+        public User()
+        {
 
         }
-
 
         public User(String name, int age, String bday) {
             this.Name = name;
@@ -121,4 +104,5 @@ public class MainActivity extends AppCompatActivity {
             this.Birthday = bday;
         }
     }
+
 }
