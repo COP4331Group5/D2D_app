@@ -1,21 +1,49 @@
 package com.google.cloud.solutions.d2d;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import java.util.*;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    private static final int MY_REQUEST_CODE = 777; //for sign in
+    List<AuthUI.IdpConfig> providers;   //sign in options
+
+    Button btn_sign_out;
+
+
+    /*SignInButton signInButton;
+    Button signOutButton;
+    TextView statusTextView;
+    GoogleApiClient mGoogleApiClient;*/
+
 
     Button getButton;
     Button sendButton;
@@ -24,23 +52,23 @@ public class MainActivity extends AppCompatActivity {
     EditText userAgeField;
 
     // Database instances used to get to specific fields of the database
-    private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+   /* private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference userRef = rootRef.child("Users").child("Adam").child("Name");
-    private DatabaseReference bdayRef = rootRef.child("Users").child("Adam").child("Birthday");
+    private DatabaseReference bdayRef = rootRef.child("Users").child("Adam").child("Birthday");*/
 //    private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
 
     private void writeNewUser(String userID, String name, int age, String bday) {
         User user = new User(name, age, bday);
 
-        rootRef.child("Users").child(userID).setValue(user);
+        //rootRef.child("Users").child(userID).setValue(user);
     }
 
     public void submitNewUser(View view) {
-        String userName = userNameField.getText().toString();
+        /*String userName = userNameField.getText().toString();
         int age = Integer.parseInt(userAgeField.getText().toString());
         String bday = userBdayField.getText().toString();
 
-        writeNewUser("888", userName, age, bday);
+        writeNewUser("888", userName, age, bday);*/
     }
 
 
@@ -49,19 +77,77 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        btn_sign_out = (Button)findViewById(R.id.btn_sign_out);
+        btn_sign_out.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AuthUI.getInstance()
+                        .signOut(MainActivity.this)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                btn_sign_out.setEnabled(false);
+                                showSignInOptions();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MainActivity.this,""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+        });
+
+
+        //Sign In
+        providers = Arrays.asList(
+                new AuthUI.IdpConfig.GoogleBuilder().build(),
+                //new AuthUI.IdpConfig.GitHubBuilder().build(),
+                new AuthUI.IdpConfig.EmailBuilder().build()
+        );
+        showSignInOptions();
+
+
         // UI elements
-        getButton = (Button)findViewById(R.id.getButton);
+        /*getButton = (Button)findViewById(R.id.getButton);
         sendButton= (Button)findViewById(R.id.sendButton);
         userNameField = (EditText)findViewById(R.id.enterNameEdit);
         userAgeField = (EditText)findViewById(R.id.enterAgeEdit);
-        userBdayField = (EditText)findViewById(R.id.enterBdayEdit);
+        userBdayField = (EditText)findViewById(R.id.enterBdayEdit);*/
     }
 
+    private void showSignInOptions() {
+        startActivityForResult(
+                AuthUI.getInstance()
+                .createSignInIntentBuilder()
+                .setAvailableProviders(providers)
+                .setTheme(R.style.MyTheme)
+                .build(), MY_REQUEST_CODE
+        );
+    }
+
+    //make Google sign-in
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == MY_REQUEST_CODE) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+            if(resultCode == RESULT_OK) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();    //Get User
+                Toast.makeText(this,""+user.getEmail(), Toast.LENGTH_SHORT).show(); //Get email on Toast
+                btn_sign_out.setEnabled(true);
+            }
+            else {
+                Toast.makeText(this, "" + response.getError().getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        /*userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String text = dataSnapshot.getValue(String.class);
@@ -88,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 String text = "Lol reading from the database didn't work";
                 userBdayField.setText(text);
             }
-        });
+        });*/
 
 //        planRef.addListenerForSingleValueEvent(new ValueEventListener() {
 //            @Override
