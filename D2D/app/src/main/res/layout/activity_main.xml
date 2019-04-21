@@ -7,13 +7,15 @@
     tools:context=".MainActivity">
 
     //sign out button
+    //android:layout_centerInParent= "true"
     <Button
-        android:id = "@+id/btn_sign_out"
-        android:text = "SignOut"
-        android:layout_centerInParent="true"
-        android:enabled="false"
+        android:id="@+id/btn_sign_out"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:enabled="false"
+        android:text="SignOut" />
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

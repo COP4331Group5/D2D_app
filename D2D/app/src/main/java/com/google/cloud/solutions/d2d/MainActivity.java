@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     EditText userAgeField;
     Button getButton;
 
+    User newUser;
+
     //Firebase
     private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseAuth mAuth;
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     //private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
 
     private void writeNewUser(String userID, String name, int age, String bday) {
-        User newUser = new User(age, name, bday);
+        newUser = new User(age, name, bday);
         rootRef.child("Users").child(userID).setValue(newUser);
     }
 
@@ -202,4 +204,32 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
     }
+
+    public void update_name()
+    {
+        newUser.name = userNameField.getText().toString();
+        rootRef.child("Users").child(userID).child("name").setValue(newUser.name);
+
+    }
+
+    public void update_age()
+    {
+        //
+        rootRef.child("Users").child(userID).child("age").setValue(Integer.parseInt(userAgeField.getText().toString()));
+
+    }
+
+    public void update_weight()
+    {
+        rootRef.child("Users").child(userID).child("weight").setValue(Integer.parseInt(userBdayField.getText().toString()));
+
+    }
+
+
+    public void update_birthday()
+    {
+        rootRef.child("Users").child(userID).child("bday").setValue((userBdayField.getText().toString()));
+
+    }
+
 }
