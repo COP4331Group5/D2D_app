@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    //sign out button
     <Button
         android:id = "@+id/btn_sign_out"
         android:text = "SignOut"

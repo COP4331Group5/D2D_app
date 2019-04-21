@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.auth.api.Auth;
@@ -32,45 +31,42 @@ import java.util.*;
 
 public class MainActivity extends AppCompatActivity {
 
-
     private static final int MY_REQUEST_CODE = 777; //for sign in
     List<AuthUI.IdpConfig> providers;   //sign in options
 
     Button btn_sign_out;
-
-
-    /*SignInButton signInButton;
-    Button signOutButton;
-    TextView statusTextView;
-    GoogleApiClient mGoogleApiClient;*/
-
-
-    Button getButton;
-    Button sendButton;
+    Button btn_send_new_info;
     EditText userNameField;
     EditText userBdayField;
     EditText userAgeField;
+    Button getButton;
+
+    //Firebase
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    FirebaseAuth mAuth;
+    FirebaseUser user;
+    String userID;
 
     // Database instances used to get to specific fields of the database
-   /* private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-    private DatabaseReference userRef = rootRef.child("Users").child("Adam").child("Name");
-    private DatabaseReference bdayRef = rootRef.child("Users").child("Adam").child("Birthday");*/
-//    private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
+    private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference nameRef;
+
+    //rootRef.child("Users").child("Adam").child("Name");
+    //private DatabaseReference bdayRef = rootRef.child("Users").child("Adam").child("Birthday");
+    //private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
 
     private void writeNewUser(String userID, String name, int age, String bday) {
-        User user = new User(name, age, bday);
-
-        //rootRef.child("Users").child(userID).setValue(user);
+        User newUser = new User(age, name, bday);
+        rootRef.child("Users").child(userID).setValue(newUser);
     }
 
     public void submitNewUser(View view) {
-        /*String userName = userNameField.getText().toString();
+        String userName = userNameField.getText().toString();
         int age = Integer.parseInt(userAgeField.getText().toString());
         String bday = userBdayField.getText().toString();
 
-        writeNewUser("888", userName, age, bday);*/
+        writeNewUser(userID, userName, age, bday);
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +74,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn_sign_out = (Button)findViewById(R.id.btn_sign_out);
+        btn_send_new_info = (Button)findViewById(R.id.btn_send_new_info);
+
+        getButton = (Button)findViewById(R.id.getButton);
+        userNameField = (EditText)findViewById(R.id.enterNameEdit);
+        userAgeField = (EditText)findViewById(R.id.enterAgeEdit);
+        userBdayField = (EditText)findViewById(R.id.enterBdayEdit);
+
+
         btn_sign_out.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,6 +92,10 @@ public class MainActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<Void> task) {
                                 btn_sign_out.setEnabled(false);
                                 showSignInOptions();
+                                userNameField.setText("");
+                                userAgeField.setText("");
+                                userBdayField.setText("");
+
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -107,14 +115,6 @@ public class MainActivity extends AppCompatActivity {
                 new AuthUI.IdpConfig.EmailBuilder().build()
         );
         showSignInOptions();
-
-
-        // UI elements
-        /*getButton = (Button)findViewById(R.id.getButton);
-        sendButton= (Button)findViewById(R.id.sendButton);
-        userNameField = (EditText)findViewById(R.id.enterNameEdit);
-        userAgeField = (EditText)findViewById(R.id.enterAgeEdit);
-        userBdayField = (EditText)findViewById(R.id.enterBdayEdit);*/
     }
 
     private void showSignInOptions() {
@@ -134,7 +134,14 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == MY_REQUEST_CODE) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if(resultCode == RESULT_OK) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();    //Get User
+               // FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();    //Get User
+
+                //Get User
+                mAuth = FirebaseAuth.getInstance();
+                FirebaseDatabase database =  FirebaseDatabase.getInstance();
+                user = mAuth.getCurrentUser();
+                if(user != null) userID = user.getUid();
+
                 Toast.makeText(this,""+user.getEmail(), Toast.LENGTH_SHORT).show(); //Get email on Toast
                 btn_sign_out.setEnabled(true);
             }
@@ -147,12 +154,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        /*userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        //mAuth.addAuthStateListener(mAuthListener);
+
+
+        /*
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String text = dataSnapshot.getValue(String.class);
                 userNameField.setText(text);
-
             }
 
             @Override
@@ -161,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 userNameField.setText(text);
             }
         });
+
 
         bdayRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -189,22 +201,5 @@ public class MainActivity extends AppCompatActivity {
 //                userPlanField.setText(text);
 //            }
 //        });
-    }
-
-    public static class User {
-        public String Name;
-        public int Age;
-        public String Birthday;
-
-        public User() {
-
-        }
-
-
-        public User(String name, int age, String bday) {
-            this.Name = name;
-            this.Age = age;
-            this.Birthday = bday;
-        }
     }
 }
