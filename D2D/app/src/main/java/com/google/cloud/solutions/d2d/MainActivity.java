@@ -39,9 +39,10 @@ public class MainActivity extends AppCompatActivity {
     EditText userNameField;
     EditText userBdayField;
     EditText userAgeField;
+    EditText userWeightField;
     Button getButton;
 
-    User newUser;
+    User currentUser;
 
     //Firebase
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -51,23 +52,16 @@ public class MainActivity extends AppCompatActivity {
 
     // Database instances used to get to specific fields of the database
     private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-    private DatabaseReference nameRef;
 
-    //rootRef.child("Users").child("Adam").child("Name");
-    //private DatabaseReference bdayRef = rootRef.child("Users").child("Adam").child("Birthday");
-    //private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
-
-    private void writeNewUser(String userID, String name, int age, String bday) {
-        newUser = new User(age, name, bday);
-        rootRef.child("Users").child(userID).setValue(newUser);
-    }
 
     public void submitNewUser(View view) {
-        String userName = userNameField.getText().toString();
+        String name = userNameField.getText().toString();
         int age = Integer.parseInt(userAgeField.getText().toString());
         String bday = userBdayField.getText().toString();
+        double weight = Double.parseDouble(userWeightField.getText().toString());
 
-        writeNewUser(userID, userName, age, bday);
+        currentUser = new User(name, bday, age, weight);
+        rootRef.child("Users").child(userID).setValue(currentUser);
     }
 
     @Override
@@ -79,9 +73,11 @@ public class MainActivity extends AppCompatActivity {
         btn_send_new_info = (Button)findViewById(R.id.btn_send_new_info);
 
         getButton = (Button)findViewById(R.id.getButton);
+
         userNameField = (EditText)findViewById(R.id.enterNameEdit);
         userAgeField = (EditText)findViewById(R.id.enterAgeEdit);
         userBdayField = (EditText)findViewById(R.id.enterBdayEdit);
+        userWeightField = (EditText)findViewById(R.id.enterWeightEdit);
 
 
         btn_sign_out.setOnClickListener(new View.OnClickListener() {
@@ -97,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                                 userNameField.setText("");
                                 userAgeField.setText("");
                                 userBdayField.setText("");
+                                userWeightField.setText("");
 
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -207,28 +204,28 @@ public class MainActivity extends AppCompatActivity {
 
     public void update_name()
     {
-        newUser.name = userNameField.getText().toString();
-        rootRef.child("Users").child(userID).child("name").setValue(newUser.name);
+        currentUser.name = userNameField.getText().toString();
+        rootRef.child("Users").child(userID).child("name").setValue(currentUser.name);
+
+    }
+
+    public void update_birthday()
+    {
+        currentUser.bday = userNameField.getText().toString();
+        rootRef.child("Users").child(userID).child("bday").setValue(currentUser.bday);
 
     }
 
     public void update_age()
     {
-        //
-        rootRef.child("Users").child(userID).child("age").setValue(Integer.parseInt(userAgeField.getText().toString()));
-
+        currentUser.age = Integer.parseInt(userAgeField.getText().toString());
+        rootRef.child("Users").child(userID).child("age").setValue(currentUser.age);
     }
 
     public void update_weight()
     {
-        rootRef.child("Users").child(userID).child("weight").setValue(Integer.parseInt(userBdayField.getText().toString()));
-
-    }
-
-
-    public void update_birthday()
-    {
-        rootRef.child("Users").child(userID).child("bday").setValue((userBdayField.getText().toString()));
+        currentUser.weight = Integer.parseInt(userWeightField.getText().toString());
+        rootRef.child("Users").child(userID).child("weight").setValue(currentUser.weight);
 
     }
 
