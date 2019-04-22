@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
         user = new User(name, age, bday);
     }
 
-    private void nothing(){}
-
     private void writeNewUser(User user, String userID/*String userID, String name, int age, String bday*/) {
         //User user = new User(name, age, bday);
        // Map<String, Object> userValues = user.toMap();
