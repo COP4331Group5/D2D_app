@@ -17,31 +17,9 @@ import com.google.firebase.database.FirebaseDatabase;
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private TextView mTextMessage;
-    Button getButton;
-    Button sendButton;
-    EditText userNameField;
-    EditText userBdayField;
-    EditText userAgeField;
 
     // Database instances used to get to specific fields of the database
-    private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-    private DatabaseReference userRef = rootRef.child("Users").child("Adam").child("Name");
-    private DatabaseReference bdayRef = rootRef.child("Users").child("Adam").child("Birthday");
-//    private DatabaseReference planRef = rootRef.child("Users").child("Adam").child("nutritionPlan").child("0").child("0");
-
-    private void writeNewUser(String userID, String name, int age, String bday) {
-        MainActivity.User user = new MainActivity.User(name, age, bday);
-
-        rootRef.child("Users").child(userID).setValue(user);
-    }
-
-    public void submitNewUser(View view) {
-        String userName = userNameField.getText().toString();
-        int age = Integer.parseInt(userAgeField.getText().toString());
-        String bday = userBdayField.getText().toString();
-
-        writeNewUser("888", userName, age, bday);
-    }
+   // private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,22 +65,4 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         return loadFragment(fragment);
     }
-
-    public static class User {
-        public String Name;
-        public int Age;
-        public String Birthday;
-
-        public User()
-        {
-
-        }
-
-        public User(String name, int age, String bday) {
-            this.Name = name;
-            this.Age = age;
-            this.Birthday = bday;
-        }
-    }
-
 }

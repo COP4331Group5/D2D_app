@@ -46,13 +46,11 @@ public class LoginActivity extends AppCompatActivity
     User currentUser;
 
     //Firebase
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    //private FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseAuth mAuth;
     FirebaseUser user;
     String userID;
-
-    // Database instances used to get to specific fields of the database
-    private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference rootRef;
 
 
     public void submitNewUser(View view) {
@@ -63,6 +61,8 @@ public class LoginActivity extends AppCompatActivity
 
         currentUser = new User(name, bday, age, weight);
         rootRef.child("Users").child(userID).setValue(currentUser);
+
+        launchMain();
     }
 
     @Override
@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                btn_sign_out.setEnabled(false);
+                                btn_sign_out.setEnabled(true);
                                 showSignInOptions();
                                 userNameField.setText("");
                                 userAgeField.setText("");
@@ -134,20 +134,23 @@ public class LoginActivity extends AppCompatActivity
         if(requestCode == MY_REQUEST_CODE) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if(resultCode == RESULT_OK) {
-                // FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();    //Get User
-
                 //Get User
                 mAuth = FirebaseAuth.getInstance();
-                FirebaseDatabase database =  FirebaseDatabase.getInstance();
                 user = mAuth.getCurrentUser();
-                if(user != null)
-                {
-                    launchMain();
-                    userID = user.getUid();
-                }
+                userID = user.getUid();
+                rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.child("Users").hasChild(userID)) {
+                            launchMain();
+                        }
+                    }
 
-                //Toast.makeText(this,""+user.getEmail(), Toast.LENGTH_SHORT).show(); //Get email on Toast
-                //btn_sign_out.setEnabled(true);
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
             }
             else {
@@ -165,6 +168,7 @@ public class LoginActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
         //mAuth.addAuthStateListener(mAuthListener);
 
