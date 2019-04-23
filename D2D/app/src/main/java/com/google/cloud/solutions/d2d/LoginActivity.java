@@ -31,6 +31,8 @@ import java.util.*;
 
 public class LoginActivity extends AppCompatActivity
 {
+    //Let's put this in here to see if it changes
+    //delete this is see this!
 
     private static final int MY_REQUEST_CODE = 777; //for sign in
     List<AuthUI.IdpConfig> providers;   //sign in options
