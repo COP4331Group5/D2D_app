@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import android.support.design.widget.BottomNavigationView;
+
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.annotation.NonNull;
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private TextView mTextMessage;
 
     // Database instances used to get to specific fields of the database
-   // private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+    // private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,5 +82,4 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
-
 }

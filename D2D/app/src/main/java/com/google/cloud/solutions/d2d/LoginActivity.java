@@ -51,7 +51,6 @@ public class LoginActivity extends AppCompatActivity
     String userID;
     private DatabaseReference rootRef;
 
-
     public void submitNewUser(View view) {
         String name = userNameField.getText().toString();
         int age = Integer.parseInt(userAgeField.getText().toString());
@@ -82,10 +81,10 @@ public class LoginActivity extends AppCompatActivity
         //Sign In
         providers = Arrays.asList(
                 new AuthUI.IdpConfig.GoogleBuilder().build(),
+                //new AuthUI.IdpConfig.GitHubBuilder().build(),
                 new AuthUI.IdpConfig.EmailBuilder().build()
         );
         showSignInOptions();
-
 
         btn_sign_out.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,7 +111,6 @@ public class LoginActivity extends AppCompatActivity
 
             }
         });
-
     }
 
     private void showSignInOptions() {
@@ -120,6 +118,7 @@ public class LoginActivity extends AppCompatActivity
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
+                        .setIsSmartLockEnabled(false)
                         .setTheme(R.style.MyTheme)
                         .build(), MY_REQUEST_CODE
         );
