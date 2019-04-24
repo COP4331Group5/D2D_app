@@ -31,7 +31,6 @@ import java.util.*;
 
 public class LoginActivity extends AppCompatActivity
 {
-
     private static final int MY_REQUEST_CODE = 777; //for sign in
     List<AuthUI.IdpConfig> providers;   //sign in options
 
@@ -167,6 +166,7 @@ public class LoginActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         rootRef = FirebaseDatabase.getInstance().getReference();
+        //setContentView(R.layout.main_login);
 
         //mAuth.addAuthStateListener(mAuthListener);
 
