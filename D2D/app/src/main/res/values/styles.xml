@@ -9,7 +9,7 @@
     </style>
 
     <style name = "MyTheme" parents = "AppTheme">
-        <item name = "android:windowBackground">@android:color/white</item>
+        <item name = "android:windowBackground">@drawable/gradient</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
