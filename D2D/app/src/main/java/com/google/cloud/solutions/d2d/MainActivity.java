@@ -14,14 +14,22 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private TextView mTextMessage;
+
+    //BarChart barchart;
 
     // Database instances used to get to specific fields of the database
     // private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -33,8 +41,26 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
-
         loadFragment(new HomeFragment());
+
+/*        barchart = (BarChart) findViewById(R.id.bargraph);
+        ArrayList<BarEntry> barEntries = new ArrayList<>();
+
+        barEntries.add(new BarEntry(44f,0));
+        barEntries.add(new BarEntry(88f,1));
+        barEntries.add(new BarEntry(66f,2));
+        barEntries.add(new BarEntry(12f,3));
+        //barEntries.add(new BarEntry(19f,4));
+        BarDataSet barDataSet = new BarDataSet(barEntries, "Names");
+
+        ArrayList<String> names = new ArrayList<>();
+        names.add("Calories");
+        names.add("Protein");
+        names.add("Carbs");
+        names.add("Fats");
+
+        BarData theData = new BarData(names, barDataSet);
+        barchart.setData(theData);*/
     }
 
     private boolean loadFragment(Fragment fragment)

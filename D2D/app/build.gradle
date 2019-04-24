@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    maven {url "https://jitpack.io"}
+}
+
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -45,6 +50,8 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-database:4.3.2'
 
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
+
+    implementation 'com.github.PhilJay:MPAndroidChart:v2.2.4'
 }
 
 apply plugin: 'com.google.gms.google-services'
