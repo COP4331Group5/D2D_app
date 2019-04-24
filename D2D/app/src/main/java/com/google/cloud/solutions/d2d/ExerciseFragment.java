@@ -95,7 +95,7 @@ public class ExerciseFragment extends Fragment
 
                     view1.setText("Enter the number of sets:");
                     view2.setText("Enter the number of reps:");
-                    view3.setText("Enter the number of sets:");
+                    view3.setText("Enter the weight:");
                     view4.setVisibility(View.INVISIBLE);
                 }
             }
