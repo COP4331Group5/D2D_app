@@ -31,9 +31,6 @@ import java.util.*;
 
 public class LoginActivity extends AppCompatActivity
 {
-    //Let's put this in here to see if it changes
-    //delete this is see this!
-
     private static final int MY_REQUEST_CODE = 777; //for sign in
     List<AuthUI.IdpConfig> providers;   //sign in options
 
@@ -82,6 +79,13 @@ public class LoginActivity extends AppCompatActivity
         userBdayField = (EditText)findViewById(R.id.enterBdayEdit);
         userWeightField = (EditText)findViewById(R.id.enterWeightEdit);
 
+        //Sign In
+        providers = Arrays.asList(
+                new AuthUI.IdpConfig.GoogleBuilder().build(),
+                new AuthUI.IdpConfig.EmailBuilder().build()
+        );
+        showSignInOptions();
+
 
         btn_sign_out.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,14 +113,6 @@ public class LoginActivity extends AppCompatActivity
             }
         });
 
-
-        //Sign In
-        providers = Arrays.asList(
-                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                //new AuthUI.IdpConfig.GitHubBuilder().build(),
-                new AuthUI.IdpConfig.EmailBuilder().build()
-        );
-        showSignInOptions();
     }
 
     private void showSignInOptions() {
@@ -171,6 +167,7 @@ public class LoginActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         rootRef = FirebaseDatabase.getInstance().getReference();
+        //setContentView(R.layout.main_login);
 
         //mAuth.addAuthStateListener(mAuthListener);
 

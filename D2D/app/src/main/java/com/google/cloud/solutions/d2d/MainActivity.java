@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -64,9 +65,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             case R.id.navigation_settings:
                 fragment = new SettingsFragment();
                 break;
+            case R.id.navigation_logout:
+                logout();
+                break;
         }
 
         return loadFragment(fragment);
+    }
+
+    private void logout() {
+
+        FirebaseAuth.getInstance().signOut();
+
+        // Launching the login activity
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
 }
