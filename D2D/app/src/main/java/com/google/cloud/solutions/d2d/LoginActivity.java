@@ -52,7 +52,6 @@ public class LoginActivity extends AppCompatActivity
     String userID;
     private DatabaseReference rootRef;
 
-
     public void submitNewUser(View view) {
         String name = userNameField.getText().toString();
         int age = Integer.parseInt(userAgeField.getText().toString());
@@ -80,6 +79,13 @@ public class LoginActivity extends AppCompatActivity
         userBdayField = (EditText)findViewById(R.id.enterBdayEdit);
         userWeightField = (EditText)findViewById(R.id.enterWeightEdit);
 
+        //Sign In
+        providers = Arrays.asList(
+                new AuthUI.IdpConfig.GoogleBuilder().build(),
+                //new AuthUI.IdpConfig.GitHubBuilder().build(),
+                new AuthUI.IdpConfig.EmailBuilder().build()
+        );
+        showSignInOptions();
 
         btn_sign_out.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,15 +112,6 @@ public class LoginActivity extends AppCompatActivity
 
             }
         });
-
-
-        //Sign In
-        providers = Arrays.asList(
-                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                //new AuthUI.IdpConfig.GitHubBuilder().build(),
-                new AuthUI.IdpConfig.EmailBuilder().build()
-        );
-        showSignInOptions();
     }
 
     private void showSignInOptions() {
