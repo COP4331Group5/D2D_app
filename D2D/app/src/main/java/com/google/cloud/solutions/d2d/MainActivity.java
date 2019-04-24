@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private TextView mTextMessage;
 
     // Database instances used to get to specific fields of the database
-   // private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+    // private DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
